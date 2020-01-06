@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -13,12 +11,6 @@ import (
 
 	"github.com/Shopify/sarama"
 )
-
-type message struct {
-	Origin   string `json:"origin"`
-	Protocol string `json:"protocol"`
-	Msg      string `json:"message,omitempty"`
-}
 
 func tcpListener(producer sarama.SyncProducer, l SocketAddr) {
 
@@ -70,18 +62,9 @@ func tcpConnHandler(conn *net.TCPConn, topic string, producer sarama.SyncProduce
 		//msg := buf + key
 		//log.Println("Got TCP packet: ", msg)
 
-		var m = message{
-			Origin:   addrString,
-			Protocol: "tcp",
-			Msg:      buf,
-		}
+		msg := addrString + ":" + "tcp " + buf
 
-		msg := bytes.NewBuffer([]byte{})
-		jsonEncoder := json.NewEncoder(msg)
-		jsonEncoder.SetEscapeHTML(false)
-		jsonEncoder.Encode(m)
-
-		publish([]byte(msg.String()), topic, producer)
+		publish([]byte(msg), topic, producer)
 
 	}
 	wg.Done()
@@ -117,21 +100,10 @@ func udpConnHandler(conn *net.UDPConn, topic string, producer sarama.SyncProduce
 
 		s := string(buf[:n])
 		addrString := addr.String()
-		//msg := s + ":::ORIGIN:::" + addrString
+		msg := addrString + ":" + "udp " + s
 		//log.Println("From ", addr.String(), "got UDP packet ready for topic ", topic, ": ", s)
 
-		var m = message{
-			Origin:   addrString,
-			Protocol: "udp",
-			Msg:      s,
-		}
-
-		msg := bytes.NewBuffer([]byte{})
-		jsonEncoder := json.NewEncoder(msg)
-		jsonEncoder.SetEscapeHTML(false)
-		jsonEncoder.Encode(m)
-
-		publish([]byte(msg.String()), topic, producer)
+		publish([]byte(msg), topic, producer)
 
 	}
 }
