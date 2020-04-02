@@ -1,4 +1,5 @@
-Initial version of the socket listener code.
+Initial version of the socket listener code. 
+The code accepts any configured protocol stream (SYSLOG, Netflow, etc.) and forwards it to an appropriate Kafka topic, adding some meta information to it.
 
 Build with modules (requires >1.11 golang):
 
