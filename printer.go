@@ -12,7 +12,7 @@ func PrintStructs(a []SocketAddr, b []SocketAddr) {
 		for _, v := range a {
 			log.Println(v)
 		}
-		log.Println("\nListener addresses:")
+		log.Println("\nListeners addresses:")
 		for _, v := range b {
 			log.Println(v)
 		}
